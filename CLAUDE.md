@@ -39,7 +39,9 @@ This project consumes the NFL model's outputs. Facts as of 2026-11-15:
   values. 20k sims at each of three uncertainty scales (x1, x1.5, x2). The empirically chosen scale is x1.5.
 - **Exported today:** daily CSV at 14:10 UTC,
   `/var/lib/nfl-collector/fairvalues/<YYYYMMDDTHHMMZ>-calibrated-hl2-k.csv`
-  with `team, rating, p_playoffs (+se, band), p_division (+band), Kalshi bid/ask at T, sigma, settings`.
+  with `team, rating, p_playoffs (+se, band), p_division (+band), Kalshi bid/ask at T, sigma, tau,
+  half_life, sims, slot`. There is no `settings` column: seed, nflverse file and code version are not
+  recorded anywhere.
 - **Not exported:** per-sim outcomes (the joint distribution), per-game home-win probabilities, and
   seed distributions. **Phase 3 needs joint per-sim outcomes** (see Phase 0).
 - **Traded market:** `KXNFLPLAYOFF-27`, 32 contracts ("team makes playoffs"). Ticker mapping:
@@ -48,8 +50,9 @@ This project consumes the NFL model's outputs. Facts as of 2026-11-15:
 - **Prices:** `tidy.sqlite` on the server: order books every 30 min since 2026-11-02 ~02:30 UTC, and
   futures trades backfilled to 2026-02-10.
 - **Point-in-time caveat:** fair values for Nov 2–5 were recomputed later with newer settings, so they
-  are **not** point-in-time. Only use files generated on or after 2026-11-06 for anything that claims
-  to be a historical decision (and verify this against file timestamps and `settings`).
+  are **not** point-in-time (they came from a one-off `--since` backfill). Only use files generated
+  on or after 2026-11-06 14:10 UTC for anything that claims to be a historical decision, and verify
+  each against its file timestamp and its `tau`/`half_life`/`sims` columns.
 - **Current prod sizing:** fixed 1 contract per order with a $20 cap, and no Kelly. This is the baseline
   rule to compare against.
 - **Settlement:** about 2027-01-11. Until then there are no realized outcomes for this season.
